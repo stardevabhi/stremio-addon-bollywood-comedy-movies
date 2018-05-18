@@ -74,7 +74,7 @@ const filters = ['\\[', '\\]', 'Deleted video', 'Private video', 'Full Movie', '
 The code above include the required modules in our file, declare some variables and set the filters.
 
 
-The code below define the scrape function, which scrapes the youtube playlist and search the  youtube video titles in google to retrieve the corresponding imdb ID.
+The code below define the scrape function, which scrapes the youtube playlist and search the  youtube video titles in google to retrieve the corresponding imdb ID. Append the below code to index.js file.
 
 ```javascript
 let scrape = async () => {
@@ -237,7 +237,7 @@ stremioFn(json_str);
 
 ```
 
-In the code above you also noticed the 'stremioFn' function, it is called with the json dataset as a parameter. This function is defined below.
+In the code above you also noticed the 'stremioFn' function, it is called with the json dataset as a parameter. This function is defined below, append this to index.js file.
 
 
 ```javascript
@@ -315,6 +315,9 @@ methods["meta.find"] = function(args, callback) {
 
 }
 ```
+
+
+The index.js file is complete now. Let's take a look at the code blocks added to 'stremioFn' function.
 
 The 'stremioFn' specify the manifest: 
 
