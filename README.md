@@ -65,10 +65,9 @@ let item_array = [];
 let href_item_array = [];
 let imdb_item_array = [];
 let imdb_ids = [];
-var text_data = '';
-const doNothing = 0;
 
-const filters = ['\\[', '\\]', 'Deleted video', 'Private video', 'Full Movie', 'hindi Comedy Movies', 'best hindi Comedy Movie', 'Hindi Movies', 'hindi movie', 'hindi Comedy Movie', 'full hindi Comedy Movie', 'Latest bollywood Movies', 'Comedy Film', 'Superhit', 'ft.', 'Movies', "\\(", "\\)", 'With Eng Subtitles', 'with Eng Subs', 'English Subtitles', 'Eng Subs', "\\|", 'Hindi DvdRip', 'Movie', 'HD', 'bollywood', 'blockbuster', ' -', '- ', ' - '];
+const filters = ['New Hindi Movies', 'Bollywood Full Movies', 'Latest Hindi Full Movie', 'Hindi Comedy Movies - 2', 'full movie in hd', 'Deleted video', 'Private video', 'hindi Comedy Movies', 'best hindi Comedy Movie', 'Full Movies', 'Full Movie', 'hindi Comedy Movie', 'full hindi Comedy Movie', 'Latest bollywood Movies', 'With Eng Subtitles', 'with Eng Subs', 'English Subtitles', 'Eng Subs', 'Hindi Movies', 'hindi movie', 'Comedy Film', 'Superhit', 'ft.', 'Movies' , 'Hindi DvdRip', 'Movie', 'HD', 'bollywood', 'blockbuster', ' -', '- ', ' - '];
+
 ```
 
 The code above include the required modules in our file, declare some variables and set the filters.
@@ -80,7 +79,7 @@ The code below define the scrape function, which scrapes the youtube playlist an
 let scrape = async () => {
 
 
-	 if(!doNothing) {
+	 
 
 	const browser = await puppeteer.launch({headless: true,
 	//slowMo: 2000
@@ -95,6 +94,7 @@ let scrape = async () => {
 	await page.waitFor(1000);
 
  	//scrape
+ 	console.log('Preparing data to load, please wait...' + "\n");
 	 
 	result = await page.evaluate(() => {
 
@@ -140,6 +140,9 @@ let scrape = async () => {
 		result[i] = result[i].replace(/\(|\)/g, '');
 		result[i] = result[i].replace(/\[|\]/g, '');
 		result[i] = result[i].replace(/\|/g, '');
+		result[i] = result[i].replace(/\{|\}/g, '');
+		
+		
 
 
 		 filters.forEach((item, index)=> {
@@ -154,6 +157,11 @@ let scrape = async () => {
 		 	}
 
 		 });//forEach
+
+		 if( result[i].trim().length > 0) {
+
+		 result[i] = result[i].replace(/ +/g, ' ');
+		 //console.log(result[i]);
 
 		 await page.type('input[name="q"]',  'imdb ' + result[i] );
 		 await page.waitFor(500);
@@ -183,6 +191,11 @@ let scrape = async () => {
 
 		 });//evaluate
 
+		} else {
+			imdb_result = '';
+
+		}
+
 
 		 imdb_ids.push(imdb_result);
 
@@ -197,8 +210,6 @@ let scrape = async () => {
 
 	await browser.close();
 
-} //donothing
-
 
 	return  { item_array, href_item_array, imdb_item_array };
 
@@ -207,9 +218,6 @@ let scrape = async () => {
 scrape().then((value) => {
 
 	let json_str = '{';
-
-	if(!doNothing) {
-
 
 	value.item_array.forEach(function(item, index) {
 
@@ -224,8 +232,6 @@ scrape().then((value) => {
 	});//value.item_array
 
 
-} //donothing
-
 json_str = json_str.substr(0, (json_str.length -1) );
 
 json_str+="}";
@@ -233,7 +239,8 @@ json_str+="}";
 
 stremioFn(json_str);
 
-});//scrape
+});//scrape.then
+
 
 ```
 
@@ -243,17 +250,18 @@ In the code above you also noticed the 'stremioFn' function, it is called with t
 ```javascript
 let stremioFn = async (json_str) => {
 
-process.env.STREMIO_LOGGING = true; // enable server logging for development purposes
+process.env.STREMIO_LOGGING = true;  
 
 
 var manifest = { 
     "id": "org.stremio.bollywoodcomedies",
     "version": "1.0.0",
 
-    "name": "Bollywood Comedy Movies Addon",
+    "name": "Bollywood Comedy Movies",
     "description": "Addon for bollywood comedy movies",
     "icon": "URL to 256x256 monochrome png icon", 
-    "background": "URL to 1366x756 png background",
+    "logo": "URL to 256x256 monochrome png icon", 
+    "background": "URL to at least 1024x786 png background",
 
     // Properties that determine when Stremio picks this add-on
     "types": ["movie"], // your add-on will be preferred for those content types
@@ -265,7 +273,7 @@ var manifest = {
 var js_string = json_str;
 
 var dataset =  JSON.parse(js_string);
-
+console.log('Data loaded successfully!' + "\n");
  
 var methods = { };
 var addon = new Stremio.Server(methods, manifest);
@@ -323,14 +331,16 @@ The 'stremioFn' specify the manifest:
 
 
 ```javascript
+
 var manifest = { 
     "id": "org.stremio.bollywoodcomedies",
     "version": "1.0.0",
 
-    "name": "Bollywood Comedy Movies Addon",
+    "name": "Bollywood Comedy Movies",
     "description": "Addon for bollywood comedy movies",
     "icon": "URL to 256x256 monochrome png icon", 
-    "background": "URL to 1366x756 png background",
+    "logo": "URL to 256x256 monochrome png icon", 
+    "background": "URL to at least 1024x786 png background",
 
     // Properties that determine when Stremio picks this add-on
     "types": ["movie"], // your add-on will be preferred for those content types
@@ -338,6 +348,7 @@ var manifest = {
     // We need this for pre-4.0 Stremio, it's the obsolete equivalent of types/idProperty
     "filter": { "query.imdb_id": { "$exists": true }, "query.type": { "$in":["movie"] } }
 };
+
 ```
 
 parse the scraped dataset
@@ -347,12 +358,14 @@ parse the scraped dataset
 var js_string = json_str;
 
 var dataset =  JSON.parse(js_string);
+console.log('Data loaded successfully!' + "\n");
 ```
  
 
 Create the server which listens on port 7000, with empty methods which are defined later: 
 
 ```javascript
+
 var methods = { };
 var addon = new Stremio.Server(methods, manifest);
 
@@ -366,6 +379,7 @@ if (module.parent) {
         console.log("Bollywood Comedy Movies Addon listening on "+server.address().port);
     }).listen(process.env.PORT || 7000);
 }
+
 ```
 
 

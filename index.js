@@ -9,17 +9,15 @@ let item_array = [];
 let href_item_array = [];
 let imdb_item_array = [];
 let imdb_ids = [];
-var text_data = '';
-const doNothing = 0;
 
-const filters = ['\\[', '\\]', 'Deleted video', 'Private video', 'Full Movie', 'hindi Comedy Movies', 'best hindi Comedy Movie', 'Hindi Movies', 'hindi movie', 'hindi Comedy Movie', 'full hindi Comedy Movie', 'Latest bollywood Movies', 'Comedy Film', 'Superhit', 'ft.', 'Movies', "\\(", "\\)", 'With Eng Subtitles', 'with Eng Subs', 'English Subtitles', 'Eng Subs', "\\|", 'Hindi DvdRip', 'Movie', 'HD', 'bollywood', 'blockbuster', ' -', '- ', ' - '];
+const filters = ['New Hindi Movies', 'Bollywood Full Movies', 'Latest Hindi Full Movie', 'Hindi Comedy Movies - 2', 'full movie in hd', 'Deleted video', 'Private video', 'hindi Comedy Movies', 'best hindi Comedy Movie', 'Full Movies', 'Full Movie', 'hindi Comedy Movie', 'full hindi Comedy Movie', 'Latest bollywood Movies', 'With Eng Subtitles', 'with Eng Subs', 'English Subtitles', 'Eng Subs', 'Hindi Movies', 'hindi movie', 'Comedy Film', 'Superhit', 'ft.', 'Movies' , 'Hindi DvdRip', 'Movie', 'HD', 'bollywood', 'blockbuster', ' -', '- ', ' - '];
 
 
 
 let scrape = async () => {
 
 
-	 if(!doNothing) {
+	 
 
 	const browser = await puppeteer.launch({headless: true,
 	//slowMo: 2000
@@ -80,6 +78,9 @@ let scrape = async () => {
 		result[i] = result[i].replace(/\(|\)/g, '');
 		result[i] = result[i].replace(/\[|\]/g, '');
 		result[i] = result[i].replace(/\|/g, '');
+		result[i] = result[i].replace(/\{|\}/g, '');
+		
+		
 
 
 		 filters.forEach((item, index)=> {
@@ -94,6 +95,11 @@ let scrape = async () => {
 		 	}
 
 		 });//forEach
+
+		 if( result[i].trim().length > 0) {
+
+		 result[i] = result[i].replace(/ +/g, ' ');
+		 //console.log(result[i]);
 
 		 await page.type('input[name="q"]',  'imdb ' + result[i] );
 		 await page.waitFor(500);
@@ -123,6 +129,11 @@ let scrape = async () => {
 
 		 });//evaluate
 
+		} else {
+			imdb_result = '';
+
+		}
+
 
 		 imdb_ids.push(imdb_result);
 
@@ -137,8 +148,6 @@ let scrape = async () => {
 
 	await browser.close();
 
-} //donothing
-
 
 	return  { item_array, href_item_array, imdb_item_array };
 
@@ -147,9 +156,6 @@ let scrape = async () => {
 scrape().then((value) => {
 
 	let json_str = '{';
-
-	if(!doNothing) {
-
 
 	value.item_array.forEach(function(item, index) {
 
@@ -164,8 +170,6 @@ scrape().then((value) => {
 	});//value.item_array
 
 
-} //donothing
-
 json_str = json_str.substr(0, (json_str.length -1) );
 
 json_str+="}";
@@ -173,12 +177,12 @@ json_str+="}";
 
 stremioFn(json_str);
 
-});//scrape
+});//scrape.then
 
 
 let stremioFn = async (json_str) => {
 
-process.env.STREMIO_LOGGING = true; // enable server logging for development purposes
+process.env.STREMIO_LOGGING = true;  
 
 
 var manifest = { 
