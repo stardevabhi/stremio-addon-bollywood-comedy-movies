@@ -443,6 +443,6 @@ methods["meta.find"] = function(args, callback) {
 
 Open the stremio app and navigate to addons section via settings > addons and in the 'Addon repository URL' box, enter http://localhost:7000 and it will prompt you to install the addon, click on 'install' button and addon will be installed.
 
-Click, the 'Discover' tab and in the sorts section you can see the 'Bollywood Comedy Movies' tab, clicking it you can see the bollywood comedy movies listed.
+Click, the 'Discover' tab and in the sorts section you can see the 'Bollywood Comedy' tab, clicking it you can see the bollywood comedy movies listed.
 
 That's All! :) 
