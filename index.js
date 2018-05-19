@@ -191,9 +191,9 @@ var manifest = {
 
     "name": "Bollywood Comedy Movies",
     "description": "Addon for bollywood comedy movies",
-    "icon": "URL to 256x256 monochrome png icon", 
-    "logo": "URL to 256x256 monochrome png icon", 
-    "background": "URL to at least 1024x786 png background",
+    "icon": "https://raw.githubusercontent.com/stardevabhi/stremio-addon-bollywood-comedy-movies/master/icons/bollywood-com-icon.png", 
+    "logo": "https://raw.githubusercontent.com/stardevabhi/stremio-addon-bollywood-comedy-movies/master/icons/bollywood-com-icon.png", 
+    "background": "https://raw.githubusercontent.com/stardevabhi/stremio-addon-bollywood-comedy-movies/master/icons/bollywood-com-1920x1080.png",
 
     // Properties that determine when Stremio picks this add-on
     "types": ["movie"], // your add-on will be preferred for those content types
